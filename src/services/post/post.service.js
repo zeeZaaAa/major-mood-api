@@ -79,19 +79,29 @@ class PostService {
             } else if (year) {
                 const parsedYear = parseInt(year);
                 let start, end;
+
+                const THAI_OFFSET = 7 * 60 * 60 * 1000;
                 if (month) {
                     const parsedMonth = parseInt(month) - 1;
                     if (day) {
                         const parsedDay = parseInt(day);
-                        start = new Date(Date.UTC(parsedYear, parsedMonth, parsedDay, 0, 0, 0));
-                        end = new Date(Date.UTC(parsedYear, parsedMonth, parsedDay, 23, 59, 59, 999));
+                        const localStart = new Date(parsedYear, parsedMonth, parsedDay, 0, 0, 0, 0);
+                        const localEnd = new Date(parsedYear, parsedMonth, parsedDay, 23, 59, 59, 999);
+                        start = new Date(localStart.getTime() - THAI_OFFSET);
+                        end = new Date(localEnd.getTime() - THAI_OFFSET);
                     } else {
-                        start = new Date(Date.UTC(parsedYear, parsedMonth, 1));
-                        end = new Date(Date.UTC(parsedYear, parsedMonth + 1, 0, 23, 59, 59, 999));
+                        const localStart = new Date(parsedYear, parsedMonth, 1, 0, 0, 0, 0);
+                        const localEnd = new Date(parsedYear, parsedMonth + 1, 0, 23, 59, 59, 999);
+                        
+                        start = new Date(localStart.getTime() - THAI_OFFSET);
+                        end = new Date(localEnd.getTime() - THAI_OFFSET);
                     }
                 } else {
-                    start = new Date(Date.UTC(parsedYear, 0, 1));
-                    end = new Date(Date.UTC(parsedYear, 11, 31, 23, 59, 59, 999));
+                    const localStart = new Date(parsedYear, 0, 1, 0, 0, 0, 0);
+                    const localEnd = new Date(parsedYear, 11, 31, 23, 59, 59, 999);
+                    
+                    start = new Date(localStart.getTime() - THAI_OFFSET);
+                    end = new Date(localEnd.getTime() - THAI_OFFSET);
                 }
                 matchStage.createdAt = { $gte: start, $lte: end };
             }
